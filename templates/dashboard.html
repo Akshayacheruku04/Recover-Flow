@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecoverFlow | Razorpay AI Revenue Recovery Operations</title>
+    <!-- Tailwind CSS with custom fintech tokens -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            50: '#F8FAFC',
+                            100: '#F1F5F9',
+                            200: '#E2E8F0',
+                            300: '#CBD5E1',
+                            400: '#94A3B8',
+                            500: '#64748B',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1E293B',
+                            900: '#0F172A',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #0F172A;
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 3px;
+        }
+        .whatsapp-bubble {
+            background-color: #005c4b;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Toast Notification Banner -->
+    <div id="toast-banner" class="fixed top-5 right-5 z-50 hidden bg-emerald-600 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-lg border border-emerald-500 transition-all flex items-center space-x-2">
+        <span id="toast-msg">Action Completed Successfully!</span>
+    </div>
+
+    <!-- Top Operations Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center space-x-3">
+                <div class="h-8 w-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                    RF
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-slate-900 tracking-tight text-base">RecoverFlow</span>
+                        <span class="text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center space-x-1">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                            <span>WhatsApp Cloud API Active</span>
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-medium">Autonomous Revenue Recovery & Payment Diagnostics</p>
+                </div>
+            </div>
+
+            <!-- Global Tabs & Controls -->
+            <div class="flex flex-wrap items-center gap-2.5">
+                <div class="bg-slate-100 p-1 rounded-xl flex items-center text-xs font-semibold text-slate-600 border border-slate-200">
+                    <button onclick="switchTab('pipeline')" id="tab-pipeline" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition">
+                        Recovery Pipeline
+                    </button>
+                    <button onclick="switchTab('agent')" id="tab-agent" class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition">
+                        Agent Control Center
+                    </button>
+                    <button onclick="switchTab('playbooks')" id="tab-playbooks" class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition">
+                        Playbooks
+                    </button>
+                    <button onclick="switchTab('analytics')" id="tab-analytics" class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition">
+                        Analytics
+                    </button>
+                </div>
+
+                <!-- Simulation & Storefront Actions -->
+                <div class="flex items-center space-x-2">
+                    <button id="btn-batch-sim" onclick="runBatchSimulation()" class="bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition shadow-sm flex items-center space-x-1.5">
+                        <span>⚡ Ingest Batch (8 Txns)</span>
+                    </button>
+
+                    <a href="/shop" target="_blank" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold px-3 py-2 rounded-xl transition shadow-sm flex items-center space-x-1">
+                        <span>Storefront</span>
+                        <svg class="h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-6 py-6 w-full flex-1">
+
+        <!-- ================= TAB 1: RECOVERY PIPELINE (DEFAULT) ================= -->
+        <div id="view-pipeline" class="space-y-6">
+
+            <!-- KPI Metric Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Revenue at Risk -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between text-xs font-medium text-slate-500">
+                        <span>Revenue at Risk (Active)</span>
+                        <span class="p-1 rounded bg-rose-50 text-rose-600 font-mono text-[10px] font-bold">UNRECOVERED</span>
+                    </div>
+                    <div class="mt-3 flex items-baseline justify-between">
+                        <h2 class="text-2xl font-bold tracking-tight text-rose-600" id="stat-at-risk">₹0.00</h2>
+                        <span class="text-xs text-slate-400 font-mono" id="stat-failed-count">0 failed</span>
+                    </div>
+                    <div class="mt-2 text-[11px] text-slate-500">
+                        Active declined amounts awaiting authorization
+                    </div>
+                </div>
+
+                <!-- Revenue Recovered -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between text-xs font-medium text-slate-500">
+                        <span>Revenue Recovered</span>
+                        <span class="p-1 rounded bg-emerald-50 text-emerald-600 font-mono text-[10px] font-bold">CAPTURED</span>
+                    </div>
+                    <div class="mt-3 flex items-baseline justify-between">
+                        <h2 class="text-2xl font-bold tracking-tight text-emerald-600" id="stat-recovered">₹0.00</h2>
+                        <span class="text-xs text-slate-400 font-mono" id="stat-recovered-count">0 paid</span>
+                    </div>
+                    <div class="mt-2 text-[11px] text-slate-500">
+                        Successfully captured via WhatsApp / Email retry links
+                    </div>
+                </div>
+
+                <!-- Recovery Rate -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between text-xs font-medium text-slate-500">
+                        <span>Recovery Success Rate</span>
+                        <span class="p-1 rounded bg-blue-50 text-blue-600 font-mono text-[10px] font-bold">KPI</span>
+                    </div>
+                    <div class="mt-3 flex items-baseline justify-between">
+                        <h2 class="text-2xl font-bold tracking-tight text-slate-900" id="stat-recovery-rate">0%</h2>
+                        <span class="text-xs text-slate-500 font-medium">Benchmark: 35%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-1.5 mt-3 overflow-hidden">
+                        <div id="stat-progress-bar" class="bg-blue-600 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- WhatsApp Outreach Health -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                    <div class="flex items-center justify-between text-xs font-medium text-slate-500">
+                        <span>WhatsApp Outreach</span>
+                        <span class="p-1 rounded bg-emerald-50 text-emerald-700 font-mono text-[10px] font-bold">OPT-IN ENFORCED</span>
+                    </div>
+                    <div class="mt-3 flex items-baseline justify-between">
+                        <h2 class="text-2xl font-bold tracking-tight text-slate-900">100%</h2>
+                        <span class="text-xs text-emerald-600 font-medium flex items-center">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1"></span> Consent Valid
+                        </span>
+                    </div>
+                    <div class="mt-2 text-[11px] text-slate-500">
+                        Zero spam • Official Meta Cloud API compliance
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Recovery Funnel Step Indicator -->
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                <div class="text-xs font-semibold text-slate-700 mb-3 flex items-center justify-between">
+                    <span class="flex items-center space-x-1.5">
+                        <span class="text-slate-400">Pipeline Stages</span>
+                        <span>•</span>
+                        <span class="font-normal text-slate-500">End-to-End WhatsApp Revenue Recovery Loop</span>
+                    </span>
+                    <span class="text-[11px] text-slate-400 font-mono">Real-Time Telemetry</span>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <div class="text-slate-500 font-medium text-[11px]">1. Failed Ingress</div>
+                        <div class="font-bold text-slate-900 text-base mt-1" id="funnel-failed">0</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">Webhook Captured</div>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <div class="text-slate-500 font-medium text-[11px]">2. AI Diagnosed</div>
+                        <div class="font-bold text-purple-700 text-base mt-1" id="funnel-diagnosed">0</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">Root-Cause Analyzed</div>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <div class="text-slate-500 font-medium text-[11px]">3. Opt-in Verified</div>
+                        <div class="font-bold text-slate-900 text-base mt-1" id="funnel-guardrails">0</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">WhatsApp Consent Checked</div>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <div class="text-slate-500 font-medium text-[11px]">4. WhatsApp Sent</div>
+                        <div class="font-bold text-emerald-700 text-base mt-1" id="funnel-dispatched">0</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">1-Click Retry Dispatched</div>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-lg">
+                        <div class="text-emerald-700 font-medium text-[11px]">5. Fully Recovered</div>
+                        <div class="font-bold text-emerald-800 text-base mt-1" id="funnel-recovered">0</div>
+                        <div class="text-[10px] text-emerald-600 mt-0.5">Payment Captured</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- "High-Value Human Approvals" Section on Top -->
+            <div id="attention-container" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2.5">
+                        <span id="attention-icon-box" class="p-1.5 rounded-lg bg-amber-500 text-white">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900" id="attention-title">High-Value Approvals • Human-in-the-Loop</h3>
+                            <p class="text-xs text-slate-500" id="attention-desc">Transactions exceeding ₹50,000 threshold requiring merchant authorization.</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md" id="attention-count">0 Pending</span>
+                </div>
+
+                <!-- High-Value Items List -->
+                <div id="attention-list" class="space-y-2 pt-2">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Main Recovery Pipeline Activity Table -->
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">Live Recovery Pipeline & Decisions</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Real-time webhook events, safety checks, and autonomous dispatch history</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="updateStats()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition border border-slate-200">
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                            <tr>
+                                <th class="py-3 px-4">Timestamp</th>
+                                <th class="py-3 px-4">Payment ID</th>
+                                <th class="py-3 px-4">Event / Stage</th>
+                                <th class="py-3 px-4">Verdict / State</th>
+                                <th class="py-3 px-4">AI Diagnosis & Channel</th>
+                                <th class="py-3 px-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pipeline-table-body" class="divide-y divide-slate-100 font-medium text-slate-700">
+                            <tr>
+                                <td colspan="6" class="py-12 text-center text-slate-400 text-xs">
+                                    Loading live pipeline data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= TAB 2: AGENT CONTROL CENTER ================= -->
+        <div id="view-agent" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Operating Mode Card -->
+                <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-slate-900">Agent Operating Mode</h3>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1.5"></span> ONLINE
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500">Define the autonomy level for the RecoverFlow decision engine.</p>
+
+                    <div class="space-y-2 pt-2">
+                        <label class="flex items-start p-3 rounded-lg border border-emerald-300 bg-emerald-50/50 cursor-pointer">
+                            <input type="radio" name="agent_mode" checked class="mt-0.5 text-blue-600 focus:ring-0">
+                            <div class="ml-3 text-xs">
+                                <span class="font-bold text-slate-900 block">Autonomous Bounded (Recommended)</span>
+                                <span class="text-slate-500 text-[11px]">Auto-recovers amounts &le; ₹50,000 via WhatsApp. Escalates high-value transactions for human sign-off.</span>
+                            </div>
+                        </label>
+                        <label class="flex items-start p-3 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                            <input type="radio" name="agent_mode" class="mt-0.5 text-blue-600 focus:ring-0">
+                            <div class="ml-3 text-xs">
+                                <span class="font-bold text-slate-900 block">Assisted (Copilot Mode)</span>
+                                <span class="text-slate-500 text-[11px]">AI generates WhatsApp drafts & retry links; requires human click to dispatch every message.</span>
+                            </div>
+                        </label>
+                        <label class="flex items-start p-3 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                            <input type="radio" name="agent_mode" class="mt-0.5 text-blue-600 focus:ring-0">
+                            <div class="ml-3 text-xs">
+                                <span class="font-bold text-slate-900 block">Observability Only</span>
+                                <span class="text-slate-500 text-[11px]">Logs webhooks and performs root cause diagnostics without outbound messaging.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Configurable Guardrail Thresholds -->
+                <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4 lg:col-span-2">
+                    <h3 class="text-sm font-bold text-slate-900">Enforced Guardrail Parameters</h3>
+                    <p class="text-xs text-slate-500">Deterministic risk limits defined in <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-[11px]">firewall.py</code> to guarantee compliant merchant operations.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 text-xs">
+                        <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-1">
+                            <span class="text-slate-500 font-medium">Auto-pilot Amount Ceiling</span>
+                            <div class="font-mono font-bold text-slate-900 text-sm">₹50,000.00</div>
+                            <p class="text-[11px] text-slate-400">Transactions above this ceiling require mandatory human review.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-1">
+                            <span class="text-slate-500 font-medium">WhatsApp Opt-In Enforcement</span>
+                            <div class="font-mono font-bold text-emerald-700 text-sm">Strict Opt-In</div>
+                            <p class="text-[11px] text-slate-400">Verifies explicit opt-in before sending WhatsApp business messages.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-1">
+                            <span class="text-slate-500 font-medium">Anti-Spam Cooldown Window</span>
+                            <div class="font-mono font-bold text-slate-900 text-sm">24 Hours</div>
+                            <p class="text-[11px] text-slate-400">Restricts outbound outreach to maximum 1 attempt per customer per day.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-1">
+                            <span class="text-slate-500 font-medium">Outbound Recovery Channels</span>
+                            <div class="font-mono font-bold text-slate-900 text-sm">WhatsApp Cloud API (Primary) + Email</div>
+                            <p class="text-[11px] text-slate-400">Context-aware channels with non-intrusive payment link generation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: RECOVERY PLAYBOOKS ================= -->
+        <div id="view-playbooks" class="hidden space-y-6">
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <h3 class="text-sm font-bold text-slate-900">Predefined Autonomous Playbooks</h3>
+                <p class="text-xs text-slate-500 mt-1">Rule-guided intervention strategies mapped to specific issuing bank decline codes.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 text-xs">
+                    <!-- Playbook 1 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-slate-900">Bank 3DS Timeout</span>
+                            <span class="text-[10px] font-mono bg-blue-50 text-blue-700 px-2 py-0.5 rounded">Rail Latency</span>
+                        </div>
+                        <p class="text-slate-500 text-[11px]">Triggered on network timeouts or 3D-Secure gateway drops during OTP entry.</p>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono text-[10px] text-slate-700 space-y-1.5">
+                            <div>1. Intercept failure webhook</div>
+                            <div>2. Diagnose gateway congestion</div>
+                            <div class="text-emerald-600 font-bold">3. Dispatch 1-click WhatsApp UPI link</div>
+                            <div>4. Halt reminders upon capture</div>
+                        </div>
+                    </div>
+
+                    <!-- Playbook 2 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-slate-900">Insufficient Balance</span>
+                            <span class="text-[10px] font-mono bg-amber-50 text-amber-700 px-2 py-0.5 rounded">Funds Limit</span>
+                        </div>
+                        <p class="text-slate-500 text-[11px]">Triggered when debit or credit card limit is exceeded at checkout.</p>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono text-[10px] text-slate-700 space-y-1.5">
+                            <div>1. Suppress aggressive urgency</div>
+                            <div>2. Send empathetic invoice alert</div>
+                            <div class="text-amber-600 font-bold">3. Provide alternate payment methods</div>
+                            <div>4. Hold cart items safely</div>
+                        </div>
+                    </div>
+
+                    <!-- Playbook 3 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-slate-900">Expired Card</span>
+                            <span class="text-[10px] font-mono bg-purple-50 text-purple-700 px-2 py-0.5 rounded">Card Lifecycle</span>
+                        </div>
+                        <p class="text-slate-500 text-[11px]">Triggered when card passes its validity month.</p>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono text-[10px] text-slate-700 space-y-1.5">
+                            <div>1. Flag card lifecycle expiration</div>
+                            <div>2. Generate Razorpay updater link</div>
+                            <div class="text-purple-600 font-bold">3. Send seamless re-auth link via WhatsApp</div>
+                            <div>4. Update database token</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: RECOVERY ANALYTICS ================= -->
+        <div id="view-analytics" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                <!-- Decline Causes -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+                    <h3 class="text-sm font-bold text-slate-900">Decline Distribution by Root Cause</h3>
+                    <div class="space-y-3 pt-2">
+                        <div>
+                            <div class="flex justify-between text-slate-600 font-medium mb-1">
+                                <span>3D-Secure & Bank Network Latency</span>
+                                <span class="font-bold text-slate-900">42%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: 42%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-slate-600 font-medium mb-1">
+                                <span>Insufficient Balance / Limit</span>
+                                <span class="font-bold text-slate-900">35%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-amber-500 h-2 rounded-full" style="width: 35%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-slate-600 font-medium mb-1">
+                                <span>Card Expiration</span>
+                                <span class="font-bold text-slate-900">15%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-purple-600 h-2 rounded-full" style="width: 15%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recovery by Rail -->
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+                    <h3 class="text-sm font-bold text-slate-900">Recovery Conversion by Payment Rail</h3>
+                    <div class="space-y-3 pt-2">
+                        <div>
+                            <div class="flex justify-between text-slate-600 font-medium mb-1">
+                                <span>WhatsApp 1-Click UPI (GPay, PhonePe)</span>
+                                <span class="font-bold text-emerald-600">89% conversion</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-2 rounded-full" style="width: 89%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-slate-600 font-medium mb-1">
+                                <span>Card Re-authorization</span>
+                                <span class="font-bold text-blue-600">72% conversion</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 72%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= RIGHT-SIDE SLIDE-OVER DETAIL DRAWER ================= -->
+    <div id="detail-drawer" class="fixed inset-0 z-50 overflow-hidden hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity" onclick="closeDrawer()"></div>
+
+        <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-xl bg-white shadow-2xl border-l border-slate-200 flex flex-col justify-between custom-scrollbar overflow-y-auto">
+                
+                <!-- Drawer Header -->
+                <div class="p-6 border-b border-slate-200 bg-slate-50/50 flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span id="drawer-badge" class="px-2 py-0.5 rounded text-[10px] font-bold font-mono uppercase bg-slate-200 text-slate-800">
+                                AUTO
+                            </span>
+                            <span class="text-xs text-slate-400 font-mono" id="drawer-timestamp">-</span>
+                        </div>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1" id="drawer-payment-id">pay_xxxxxx</h2>
+                        <p class="text-xs text-slate-500" id="drawer-customer-summary">Customer summary</p>
+                    </div>
+                    <button onclick="closeDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 text-sm font-bold">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- Drawer Content -->
+                <div class="p-6 space-y-6 flex-1 text-xs text-slate-700">
+                    
+                    <!-- High-Value Review Status Banner inside Drawer -->
+                    <div id="drawer-review-banner" class="bg-amber-50 border border-amber-300 rounded-xl p-4 text-xs space-y-1 text-amber-900">
+                        <div class="font-bold flex items-center space-x-1.5 text-amber-950">
+                            <span id="drawer-banner-title">⚠️ High-Value Human-in-the-Loop Intercept</span>
+                        </div>
+                        <p class="text-amber-800 text-[11px] leading-relaxed" id="drawer-banner-desc">
+                            This transaction exceeds ₹50,000. Review and customize the outreach message below, then click <b>Approve & Dispatch</b>.
+                        </p>
+                    </div>
+
+                    <!-- Core Specs Matrix -->
+                    <div class="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200 font-mono">
+                        <div>
+                            <span class="text-slate-400 text-[11px] block">Failed Amount</span>
+                            <span class="text-sm font-bold text-slate-900" id="drawer-amount">₹0.00</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[11px] block">Error Code</span>
+                            <span class="text-xs font-semibold text-rose-600 truncate block" id="drawer-error-code">-</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[11px] block">Payment Method</span>
+                            <span class="text-xs text-slate-800" id="drawer-method">Netbanking / Card</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[11px] block">Current Status</span>
+                            <span class="text-xs font-bold text-slate-900" id="drawer-verdict">ALLOW</span>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp Recovery Outreach Card -->
+                    <div class="border border-emerald-200 bg-emerald-50/40 rounded-2xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                                <span class="font-bold text-emerald-950 text-xs">WhatsApp Recovery Outreach</span>
+                            </div>
+                            <span id="drawer-wa-status-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                SIMULATED
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-[11px]">
+                            <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                                <span class="text-slate-400 block text-[10px]">Customer Phone</span>
+                                <span class="font-mono font-semibold text-slate-800" id="drawer-wa-phone">Phone number unavailable</span>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                                <span class="text-slate-400 block text-[10px]">Consent Verification</span>
+                                <span class="font-semibold text-emerald-700" id="drawer-wa-consent">✓ WhatsApp Opted-In</span>
+                            </div>
+                        </div>
+
+                        <!-- WhatsApp Message Bubble Preview -->
+                        <div>
+                            <span class="text-slate-500 text-[10px] font-semibold block mb-1">WhatsApp Template Message Preview:</span>
+                            <div class="whatsapp-bubble p-3 rounded-2xl rounded-tl-none text-xs leading-relaxed font-sans shadow-sm space-y-1.5">
+                                <p id="drawer-wa-body">Hi Alex Mercer, your recent payment could not be completed. You can securely retry your payment here: https://rzp.io/i/recov</p>
+                                <div class="text-[10px] text-emerald-200 text-right flex items-center justify-end space-x-1">
+                                    <span>Template: payment_recovery (en)</span>
+                                    <span>• 10:42 AM ✓✓</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Root Cause Diagnostic Card -->
+                    <div class="bg-purple-50/60 border border-purple-200 rounded-xl p-4 space-y-2">
+                        <div class="flex items-center justify-between text-purple-900 font-bold">
+                            <span class="flex items-center space-x-1.5">
+                                <span>🧠 AI Root-Cause Diagnostic</span>
+                            </span>
+                            <span class="text-[10px] font-mono bg-purple-200/80 text-purple-900 px-2 py-0.5 rounded">Confidence: 96%</span>
+                        </div>
+                        <p class="text-purple-900 font-medium text-xs leading-relaxed" id="drawer-diagnosis">-</p>
+                        <div class="pt-2 border-t border-purple-200/60 text-[11px] text-purple-800">
+                            <b class="font-semibold">Strategy:</b> <span id="drawer-strategy">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Chronological Recovery Timeline -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider text-[11px]">Recovery Event Timeline</h4>
+                        <div class="border-l-2 border-slate-200 ml-2 space-y-4 text-xs pl-4 font-mono text-slate-600">
+                            <div class="relative">
+                                <span class="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-slate-400"></span>
+                                <span class="font-semibold text-slate-900 block">1. Webhook Ingress Received</span>
+                                <span class="text-[10px] text-slate-400">Razorpay event: payment.failed verified via HMAC</span>
+                            </div>
+                            <div class="relative">
+                                <span class="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-purple-500"></span>
+                                <span class="font-semibold text-slate-900 block">2. AI Root Cause Analyzed</span>
+                                <span class="text-[10px] text-slate-400">Decline signals diagnosed by Gemini Flash</span>
+                            </div>
+                            <div class="relative">
+                                <span class="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                                <span class="font-semibold text-slate-900 block">3. WhatsApp Opt-In Verified</span>
+                                <span class="text-[10px] text-slate-400">Consent, amount ceiling & anti-spam passed</span>
+                            </div>
+                            <div class="relative" id="timeline-action-step">
+                                <span class="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-emerald-600"></span>
+                                <span class="font-semibold text-slate-900 block" id="timeline-action-label">4. WhatsApp Recovery Dispatched</span>
+                                <span class="text-[10px] text-slate-400" id="timeline-action-desc">1-Click UPI retry link delivered to customer</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Editable Outreach Communications -->
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider text-[11px]">Email Copy (Fallback Channel)</h4>
+                            <span class="text-[10px] text-blue-600 font-semibold bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">Editable</span>
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 text-[11px] font-semibold mb-1">Subject Line</label>
+                            <input type="text" id="drawer-subject" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 text-[11px] font-semibold mb-1">Message Body</label>
+                            <textarea id="drawer-body" rows="5" class="w-full bg-white border border-slate-300 rounded-xl p-3 text-xs text-slate-900 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none leading-relaxed"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Drawer Footer (Action Controls) -->
+                <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between" id="drawer-footer">
+                    <span class="text-[11px] text-slate-500 font-medium" id="drawer-footer-text">Action Controls</span>
+                    <div id="drawer-action-buttons" class="flex items-center space-x-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-400 py-6 border-t border-slate-200 bg-white">
+        RecoverFlow — Built for Razorpay Agent Studio Buildathon 2026.
+    </footer>
+
+    <!-- Dashboard Logic Script -->
+    <script>
+        let allLogsCache = [];
+        let currentDrawerPaymentId = "";
+
+        function showToast(msg) {
+            const t = document.getElementById('toast-banner');
+            document.getElementById('toast-msg').textContent = msg;
+            t.classList.remove('hidden');
+            setTimeout(() => {
+                t.classList.add('hidden');
+            }, 4000);
+        }
+
+        function formatCurrency(amountPaisa) {
+            const amountRupees = amountPaisa / 100;
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR'
+            }).format(amountRupees);
+        }
+
+        function switchTab(tabId) {
+            ['pipeline', 'agent', 'playbooks', 'analytics'].forEach(t => {
+                const el = document.getElementById('view-' + t);
+                const tabBtn = document.getElementById('tab-' + t);
+                if (t === tabId) {
+                    el.classList.remove('hidden');
+                    tabBtn.className = "px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition";
+                } else {
+                    el.classList.add('hidden');
+                    tabBtn.className = "px-3 py-1.5 rounded-lg hover:text-slate-900 transition";
+                }
+            });
+        }
+
+        async function runBatchSimulation() {
+            const btn = document.getElementById('btn-batch-sim');
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳ Ingesting Batch...</span>`;
+
+            try {
+                const res = await fetch('/api/simulate-batch', { method: 'POST' });
+                const data = await res.json();
+                showToast("✓ Ingested batch of test transactions with WhatsApp outreach!");
+                await updateStats();
+            } catch(e) {
+                alert("Simulation failed: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>⚡ Ingest Batch (8 Txns)</span>`;
+            }
+        }
+
+        function formatPhoneNumber(phone) {
+            if (!phone || typeof phone !== 'string') return "Phone number unavailable";
+            const trimmed = phone.trim();
+            if (trimmed === "" || trimmed === "None" || trimmed === "null" || trimmed === "Phone number unavailable") {
+                return "Phone number unavailable";
+            }
+            const clean = trimmed.replace(/[^0-9]/g, '');
+            if (clean.length < 10) return "Phone number unavailable";
+            if (/^0+$/.test(clean)) return "Phone number unavailable";
+            
+            let digits = clean;
+            if (digits.length === 10) {
+                digits = "91" + digits;
+            } else if (digits.length === 11 && digits.startsWith("0")) {
+                digits = "91" + digits.substring(1);
+            }
+            
+            if (digits.startsWith("91") && digits.length === 12) {
+                return `+91 ${digits.substring(2, 7)} ${digits.substring(7)}`;
+            }
+            return `+${digits}`;
+        }
+
+        function openDetailDrawer(paymentId) {
+            currentDrawerPaymentId = paymentId;
+            const logsForPid = allLogsCache.filter(l => l.payment_id === paymentId);
+            if (logsForPid.length === 0) return;
+
+            const webhookLog = logsForPid.find(l => l.action_type === 'WEBHOOK_RECEIVED') || logsForPid[0];
+            const aiLog = logsForPid.find(l => l.action_type === 'AI_DRAFTING');
+            const firewallLog = logsForPid.find(l => l.action_type === 'RISK_FIREWALL');
+            const approvalLog = logsForPid.find(l => l.action_type === 'MANUAL_APPROVAL');
+            const recoveryLog = logsForPid.find(l => l.action_type === 'RECOVERY_DETECTED');
+            const whatsappLog = logsForPid.find(l => l.action_type === 'WHATSAPP_DISPATCH');
+
+            // 1. Extract Customer Info from DB Fields & Logs
+            let rawPhone = null;
+            let rawName = null;
+            let rawEmail = null;
+            let amountPaisa = 50000;
+            let errorCode = "BAD_REQUEST_ERROR";
+
+            for (const log of logsForPid) {
+                if (log.customer_phone && !rawPhone) rawPhone = log.customer_phone;
+                if (log.customer_name && !rawName) rawName = log.customer_name;
+                if (log.customer_email && !rawEmail) rawEmail = log.customer_email;
+                if (log.payment_amount) amountPaisa = log.payment_amount;
+                if (log.payment_error_code) errorCode = log.payment_error_code;
+                
+                if (!rawPhone && log.details) {
+                    try {
+                        const p = JSON.parse(log.details);
+                        if (p.recipient && p.recipient.includes('+')) rawPhone = p.recipient;
+                        else if (p.phone) rawPhone = p.phone;
+                        else if (p.recipient_phone) rawPhone = p.recipient_phone;
+                        if (p.amount) amountPaisa = p.amount;
+                        if (p.error_code) errorCode = p.error_code;
+                    } catch(e){}
+                }
+            }
+
+            const formattedPhone = formatPhoneNumber(rawPhone);
+            const hasValidPhone = formattedPhone !== "Phone number unavailable";
+            const customerName = rawName || "Valued Customer";
+
+            document.getElementById('drawer-payment-id').textContent = paymentId;
+            document.getElementById('drawer-timestamp').textContent = webhookLog.created_at.replace('T', ' ').substring(0, 19);
+            document.getElementById('drawer-amount').textContent = formatCurrency(amountPaisa);
+            document.getElementById('drawer-error-code').textContent = errorCode;
+
+            // 2. Update Customer Phone & Consent Status in Drawer
+            const phoneEl = document.getElementById('drawer-wa-phone');
+            const consentEl = document.getElementById('drawer-wa-consent');
+            if (hasValidPhone) {
+                phoneEl.textContent = formattedPhone;
+                phoneEl.className = "font-mono font-semibold text-slate-800 text-xs";
+                consentEl.textContent = "✓ WhatsApp Opted-In";
+                consentEl.className = "font-semibold text-emerald-700 text-xs";
+            } else {
+                phoneEl.textContent = "Phone number unavailable";
+                phoneEl.className = "font-sans font-medium text-slate-400 italic text-[11px]";
+                consentEl.textContent = "✕ Phone Missing / Blocked";
+                consentEl.className = "font-semibold text-rose-600 text-xs";
+            }
+            
+            const isHighValue = (firewallLog && firewallLog.decision === 'REVIEW') || (aiLog && aiLog.decision === 'REVIEW') || (amountPaisa >= 5000000);
+            const isApproved = !!approvalLog || !!recoveryLog;
+
+            let verdictBadge = isApproved ? "APPROVED" : (isHighValue ? "REVIEW" : (firewallLog ? firewallLog.decision : "ALLOW"));
+            document.getElementById('drawer-verdict').textContent = verdictBadge;
+
+            let diagnosis = "Bank decline diagnosed; optimal recovery path determined.";
+            let strategy = "Dispatching 1-click alternative checkout link with zero-pressure tone.";
+            let subject = "Action Required: Complete your recent payment";
+            let body = `Hi ${customerName},\n\nWe noticed your recent payment was declined by the bank. You can securely complete your transaction using your preferred payment method here:\n\n{payment_link}\n\nBest regards,\nSyntex Team`;
+            let whatsappText = `Hi ${customerName}! 👋 Your recent payment of ${formatCurrency(amountPaisa)} could not be completed. You can securely retry via 1-click UPI here: https://rzp.io/i/recov_${paymentId.substring(4)}`;
+
+            if (aiLog) {
+                try {
+                    const aiDetails = JSON.parse(aiLog.details);
+                    if (aiDetails.diagnosis) diagnosis = aiDetails.diagnosis;
+                    if (aiDetails.strategy) strategy = aiDetails.strategy;
+                    if (aiDetails.subject) subject = aiDetails.subject;
+                    if (aiDetails.body) body = aiDetails.body;
+                    if (aiDetails.whatsapp_copy) whatsappText = aiDetails.whatsapp_copy.replace('{payment_link}', 'https://rzp.io/i/recov_' + paymentId.substring(4));
+                } catch(e){}
+            }
+
+            if (approvalLog) {
+                try {
+                    const appDetails = JSON.parse(approvalLog.details);
+                    if (appDetails.subject) subject = appDetails.subject;
+                    if (appDetails.body) body = appDetails.body;
+                } catch(e){}
+            }
+
+            document.getElementById('drawer-diagnosis').textContent = diagnosis;
+            document.getElementById('drawer-strategy').textContent = strategy;
+            document.getElementById('drawer-subject').value = subject;
+            document.getElementById('drawer-body').value = body;
+            document.getElementById('drawer-wa-body').textContent = whatsappText;
+
+            // 3. WhatsApp Status details
+            let waStatus = "SIMULATED";
+            if (!hasValidPhone) {
+                waStatus = "BLOCKED (No Phone)";
+                document.getElementById('drawer-wa-status-badge').className = "px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-600 border border-slate-300";
+            } else if (whatsappLog) {
+                try {
+                    const waParsed = JSON.parse(whatsappLog.details);
+                    waStatus = waParsed.status || "SENT";
+                } catch(e) {
+                    waStatus = whatsappLog.decision || "SIMULATED";
+                }
+                document.getElementById('drawer-wa-status-badge').className = "px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-100 text-purple-800 border border-purple-300";
+            } else if (isApproved) {
+                waStatus = "SENT";
+                document.getElementById('drawer-wa-status-badge').className = "px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300";
+            } else if (isHighValue && !isApproved) {
+                waStatus = "APPROVAL_REQUIRED";
+                document.getElementById('drawer-wa-status-badge').className = "px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300";
+            }
+            document.getElementById('drawer-wa-status-badge').textContent = waStatus;
+
+            const reviewBanner = document.getElementById('drawer-review-banner');
+            const bannerTitle = document.getElementById('drawer-banner-title');
+            const bannerDesc = document.getElementById('drawer-banner-desc');
+            const btnContainer = document.getElementById('drawer-action-buttons');
+            const footerText = document.getElementById('drawer-footer-text');
+
+            if (isHighValue) {
+                reviewBanner.classList.remove('hidden');
+                if (!isApproved) {
+                    reviewBanner.className = "bg-amber-50 border border-amber-300 rounded-xl p-4 text-xs space-y-1 text-amber-900";
+                    bannerTitle.textContent = "⚠️ High-Value Human-in-the-Loop Intercept";
+                    bannerDesc.textContent = `This transaction (${formatCurrency(amountPaisa)}) exceeds ₹50,000 threshold. Review copy below before dispatching.`;
+                    footerText.textContent = "Awaiting Merchant Approval";
+                    btnContainer.innerHTML = `
+                        <button id="btn-drawer-approve" onclick="approvePaymentFromDrawer()" class="px-4 py-2 ${hasValidPhone ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-blue-600 hover:bg-blue-500'} active:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center space-x-1">
+                            <span>✓ ${hasValidPhone ? 'Approve & Send WhatsApp' : 'Approve & Send Email'}</span>
+                        </button>
+                        <button onclick="rejectPaymentFromDrawer()" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs rounded-xl transition">
+                            ✕ Reject
+                        </button>
+                    `;
+                } else {
+                    reviewBanner.className = "bg-emerald-50 border border-emerald-300 rounded-xl p-4 text-xs space-y-1 text-emerald-900";
+                    bannerTitle.textContent = "🟢 Manually Approved & Recovered";
+                    bannerDesc.textContent = "This high-value transaction was authorized by the merchant admin. Outreach was dispatched and recovery recorded.";
+                    footerText.textContent = "Status: Approved & Captured";
+                    btnContainer.innerHTML = `
+                        <button id="btn-drawer-approve" onclick="approvePaymentFromDrawer()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm transition">
+                            ✉️ Re-send Outreach
+                        </button>
+                        <button onclick="closeDrawer()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl">
+                            Close
+                        </button>
+                    `;
+                }
+            } else {
+                reviewBanner.classList.add('hidden');
+                footerText.textContent = "Status: Autonomous Recovery Active";
+                btnContainer.innerHTML = `
+                    <button id="btn-drawer-approve" onclick="approvePaymentFromDrawer()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition">
+                        ✉️ Send / Update Outreach
+                    </button>
+                    <button onclick="closeDrawer()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl">
+                        Close
+                    </button>
+                `;
+            }
+
+            document.getElementById('detail-drawer').classList.remove('hidden');
+        }
+
+        function closeDrawer() {
+            document.getElementById('detail-drawer').classList.add('hidden');
+        }
+
+        async function approvePaymentFromDrawer() {
+            const btn = document.getElementById('btn-drawer-approve');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = "Dispatching...";
+            }
+
+            const subject = document.getElementById('drawer-subject').value;
+            const body = document.getElementById('drawer-body').value;
+
+            try {
+                const res = await fetch('/api/approve-recovery', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        payment_id: currentDrawerPaymentId,
+                        subject: subject,
+                        body: body
+                    })
+                });
+
+                const data = await res.json();
+                showToast("✓ " + (data.message || "WhatsApp Outreach Approved and Dispatched!"));
+                closeDrawer();
+                await updateStats();
+            } catch(e) {
+                alert("Approval failed: " + e.message);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = "✓ Approve & Send WhatsApp";
+                }
+            }
+        }
+
+        async function rejectPaymentFromDrawer() {
+            if (!confirm("Are you sure you want to reject this recovery outreach?")) return;
+
+            try {
+                const res = await fetch('/api/reject-recovery', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        payment_id: currentDrawerPaymentId,
+                        reason: "Rejected by merchant operator"
+                    })
+                });
+                showToast("✕ Outreach rejected.");
+                closeDrawer();
+                await updateStats();
+            } catch(e) {
+                alert("Rejection failed: " + e.message);
+            }
+        }
+
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/stats');
+                if (!response.ok) throw new Error('API request failed');
+
+                const data = await response.json();
+                allLogsCache = data.logs;
+
+                // KPI counters
+                document.getElementById('stat-at-risk').textContent = formatCurrency(data.stats.total_at_risk);
+                document.getElementById('stat-recovered').textContent = formatCurrency(data.stats.total_recovered);
+                document.getElementById('stat-failed-count').textContent = `${data.stats.count_failed} failed`;
+                document.getElementById('stat-recovered-count').textContent = `${data.stats.count_recovered} recovered`;
+                document.getElementById('stat-recovery-rate').textContent = `${data.stats.recovery_rate}%`;
+                document.getElementById('stat-progress-bar').style.width = `${data.stats.recovery_rate}%`;
+
+                // Funnel Calculations
+                document.getElementById('funnel-failed').textContent = data.stats.count_failed;
+                document.getElementById('funnel-diagnosed').textContent = data.logs.filter(l => l.action_type === 'AI_DRAFTING').length;
+                document.getElementById('funnel-guardrails').textContent = data.logs.filter(l => l.action_type === 'RISK_FIREWALL' && l.decision !== 'BLOCK').length;
+                document.getElementById('funnel-dispatched').textContent = data.logs.filter(l => l.action_type === 'WHATSAPP_DISPATCH' || l.action_type === 'OUTBOUND_DISPATCH' || l.action_type === 'MANUAL_APPROVAL').length;
+                document.getElementById('funnel-recovered').textContent = data.stats.count_recovered;
+
+                // High-Value Approvals Section on Top
+                const approvedPids = new Set(data.logs.filter(l => l.action_type === 'MANUAL_APPROVAL' || l.action_type === 'MANUAL_REJECTION').map(l => l.payment_id));
+                const allHighValueLogs = data.logs.filter(l => (l.action_type === 'RISK_FIREWALL' || l.action_type === 'AI_DRAFTING') && l.decision === 'REVIEW');
+                
+                // Deduplicate by payment_id
+                const uniqueHighValueMap = new Map();
+                allHighValueLogs.forEach(r => {
+                    if (!uniqueHighValueMap.has(r.payment_id)) uniqueHighValueMap.set(r.payment_id, r);
+                });
+                const highValueItems = Array.from(uniqueHighValueMap.values());
+                const pendingItems = highValueItems.filter(item => !approvedPids.has(item.payment_id));
+                const approvedItems = highValueItems.filter(item => approvedPids.has(item.payment_id));
+
+                const attentionList = document.getElementById('attention-list');
+                const attentionCount = document.getElementById('attention-count');
+                const attentionTitle = document.getElementById('attention-title');
+                const attentionDesc = document.getElementById('attention-desc');
+                const attentionIconBox = document.getElementById('attention-icon-box');
+
+                if (pendingItems.length > 0) {
+                    attentionIconBox.className = "p-1.5 rounded-lg bg-amber-500 text-white";
+                    attentionTitle.textContent = "High-Value Approvals • Action Required";
+                    attentionDesc.textContent = "Transactions exceeding ₹50,000 threshold awaiting your authorization.";
+                    attentionCount.textContent = `${pendingItems.length} Pending Approval`;
+                    attentionCount.className = "text-xs font-mono font-bold bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-1 rounded-md";
+                    
+                    attentionList.innerHTML = '';
+                    pendingItems.forEach(r => {
+                        attentionList.insertAdjacentHTML('beforeend', `
+                            <div class="bg-amber-50/60 p-3.5 rounded-xl border border-amber-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                                <div class="flex items-center space-x-3">
+                                    <span class="font-mono font-bold text-slate-900 text-xs">${r.payment_id}</span>
+                                    <span class="font-bold text-slate-900 font-mono text-xs">₹60,000.00</span>
+                                    <span class="text-xs text-amber-900 font-medium">Enterprise Hardware Kit (Decline Intercept)</span>
+                                </div>
+                                <button onclick="openDetailDrawer('${r.payment_id}')" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold rounded-lg text-xs transition shadow-sm">
+                                    Review & Approve ↗
+                                </button>
+                            </div>
+                        `);
+                    });
+                } else if (approvedItems.length > 0) {
+                    attentionIconBox.className = "p-1.5 rounded-lg bg-emerald-600 text-white";
+                    attentionTitle.textContent = "High-Value Approvals • Verified & Dispatched";
+                    attentionDesc.textContent = "All high-value payments exceeding ₹50,000 have been authorized and captured via WhatsApp.";
+                    attentionCount.textContent = `${approvedItems.length} Approved ✓`;
+                    attentionCount.className = "text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-md";
+
+                    attentionList.innerHTML = '';
+                    approvedItems.forEach(r => {
+                        attentionList.insertAdjacentHTML('beforeend', `
+                            <div class="bg-emerald-50/60 p-3 rounded-xl border border-emerald-200 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                                <div class="flex items-center space-x-3">
+                                    <span class="font-mono font-bold text-emerald-950 text-xs">${r.payment_id}</span>
+                                    <span class="font-bold text-emerald-950 font-mono text-xs">₹60,000.00</span>
+                                    <span class="text-xs text-emerald-800 font-medium">Enterprise Kit (WhatsApp Outreach Dispatched)</span>
+                                </div>
+                                <button onclick="openDetailDrawer('${r.payment_id}')" class="text-emerald-700 hover:text-emerald-900 font-bold text-xs">
+                                    View Audit ↗
+                                </button>
+                            </div>
+                        `);
+                    });
+                } else {
+                    attentionIconBox.className = "p-1.5 rounded-lg bg-slate-200 text-slate-600";
+                    attentionTitle.textContent = "High-Value Approvals • Human-in-the-Loop";
+                    attentionDesc.textContent = "Transactions exceeding ₹50,000 will be held here for merchant sign-off.";
+                    attentionCount.textContent = `0 Pending`;
+                    attentionCount.className = "text-xs font-mono font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md";
+                    attentionList.innerHTML = `
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-400 text-center">
+                            No high-value transactions awaiting approval. (Click "Ingest Batch" or checkout Enterprise on Storefront to test).
+                        </div>
+                    `;
+                }
+
+                // Main Pipeline Table
+                const tableBody = document.getElementById('pipeline-table-body');
+                tableBody.innerHTML = '';
+
+                if (data.logs.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="py-12 text-center text-slate-400 text-xs">
+                                No recovery events logged yet. Click "Ingest Batch" above to populate realistic payment operations.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                data.logs.forEach(log => {
+                    let badgeColor = "bg-slate-100 text-slate-700 border-slate-200";
+                    let badgeText = log.decision;
+
+                    if (log.decision === "ALLOW") badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold";
+                    if (log.decision === "BLOCK") badgeColor = "bg-rose-50 text-rose-700 border-rose-200 font-semibold";
+                    if (log.decision === "REVIEW") {
+                        if (approvedPids.has(log.payment_id)) {
+                            badgeColor = "bg-emerald-50 text-emerald-800 border-emerald-300 font-bold";
+                            badgeText = "APPROVED ✓";
+                        } else {
+                            badgeColor = "bg-amber-100 text-amber-900 border-amber-300 font-bold";
+                            badgeText = "REVIEW";
+                        }
+                    }
+                    if (log.decision === "SUCCESS") badgeColor = "bg-blue-50 text-blue-700 border-blue-200 font-semibold";
+                    if (log.decision === "SIMULATED") badgeColor = "bg-purple-50 text-purple-700 border-purple-200 font-semibold";
+                    if (log.decision === "SENT" || log.decision === "DELIVERED") badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold";
+
+                    let actionLabel = log.action_type;
+                    if (log.action_type === "RISK_FIREWALL") actionLabel = "🛡️ Firewall Evaluation";
+                    if (log.action_type === "AI_DRAFTING") actionLabel = "🧠 AI Root Cause Diagnosis";
+                    if (log.action_type === "WHATSAPP_DISPATCH") actionLabel = "💬 WhatsApp Outreach";
+                    if (log.action_type === "WHATSAPP_STATUS_UPDATE") actionLabel = "📲 WhatsApp Status Update";
+                    if (log.action_type === "OUTBOUND_DISPATCH") actionLabel = "✉️ Recovery Dispatched";
+                    if (log.action_type === "WEBHOOK_RECEIVED") actionLabel = "📥 Ingress Captured";
+                    if (log.action_type === "RECOVERY_DETECTED") actionLabel = "🎉 Payment Re-authorized";
+                    if (log.action_type === "MANUAL_APPROVAL") actionLabel = "👤 Human Approved";
+                    if (log.action_type === "MANUAL_REJECTION") actionLabel = "🚫 Human Rejected";
+
+                    let detailsSummary = "";
+                    try {
+                        const parsed = JSON.parse(log.details);
+                        if (parsed.diagnosis) detailsSummary = parsed.diagnosis;
+                        else if (parsed.reason) detailsSummary = parsed.reason;
+                        else if (parsed.template) detailsSummary = `Template '${parsed.template}' → ${parsed.recipient} (${parsed.status})`;
+                        else if (parsed.subject) detailsSummary = `Subject: "${parsed.subject}"`;
+                        else if (parsed.payment_url) detailsSummary = `Link: ${parsed.payment_url}`;
+                        else detailsSummary = JSON.stringify(parsed);
+                    } catch(e) {
+                        detailsSummary = log.details || "-";
+                    }
+
+                    const timeStr = log.created_at.replace('T', ' ').substring(0, 19);
+
+                    const rowHtml = `
+                        <tr class="hover:bg-slate-50/80 transition cursor-pointer" onclick="openDetailDrawer('${log.payment_id}')">
+                            <td class="py-3 px-4 font-mono text-slate-400 text-[11px] whitespace-nowrap">${timeStr}</td>
+                            <td class="py-3 px-4 font-mono font-bold text-slate-900 text-xs">${log.payment_id}</td>
+                            <td class="py-3 px-4 text-slate-600 font-medium text-xs whitespace-nowrap">${actionLabel}</td>
+                            <td class="py-3 px-4 whitespace-nowrap">
+                                <span class="px-2 py-0.5 rounded text-[10px] border ${badgeColor}">
+                                    ${badgeText}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-slate-600 text-xs max-w-md truncate">${detailsSummary}</td>
+                            <td class="py-3 px-4 text-right whitespace-nowrap">
+                                <button onclick="event.stopPropagation(); openDetailDrawer('${log.payment_id}')" class="text-blue-600 hover:text-blue-800 font-semibold text-[11px]">
+                                    Inspect ↗
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.insertAdjacentHTML('beforeend', rowHtml);
+                });
+
+            } catch (err) {
+                console.error("Dashboard auto-refresh error:", err);
+            }
+        }
+
+        // Initialize and auto-refresh every 4s
+        updateStats();
+        setInterval(updateStats, 4000);
+    </script>
+</body>
+</html>

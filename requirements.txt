@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pydantic
+google-generativeai
+razorpay
+python-dotenv
+httpx
+jinja2

@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntex | Premium Tech & Workspace Essentials</title>
+    <!-- Tailwind CSS with custom luxury ecommerce palette -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Razorpay Checkout SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        body: ['"Inter"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            bg: '#080C14',
+                            surface: '#0F1523',
+                            elevated: '#151D30',
+                            border: '#1E293B',
+                            borderHover: '#334155',
+                            emerald: '#10B981',
+                            emeraldHover: '#059669',
+                            textPrimary: '#F8FAFC',
+                            textSecondary: '#94A3B8',
+                            textMuted: '#64748B',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #080C14;
+            color: #F8FAFC;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0F1523;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 4px;
+        }
+        .img-zoom {
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .group:hover .img-zoom {
+            transform: scale(1.04);
+        }
+    </style>
+</head>
+<body class="bg-brand-bg text-brand-textPrimary min-h-screen flex flex-col justify-between selection:bg-brand-emerald selection:text-black">
+
+    <!-- Toast Notification Popup -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden bg-brand-elevated border border-brand-border text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-2xl transition-all duration-300 flex items-center space-x-2.5">
+        <span class="h-2 w-2 rounded-full bg-brand-emerald"></span>
+        <span id="toast-text">Item added to cart</span>
+    </div>
+
+    <!-- Announcement Bar -->
+    <aside class="bg-brand-surface border-b border-brand-border/80 px-4 py-2 text-center text-[11px] font-medium text-brand-textSecondary tracking-wide">
+        <span>Complimentary Express Shipping on all orders across India • 1-Year Official Warranty Included</span>
+    </aside>
+
+    <!-- Global Header / Navbar -->
+    <header class="bg-brand-bg/90 backdrop-blur-md border-b border-brand-border sticky top-0 z-40 px-6 sm:px-12 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="navigate('shop')">
+                <div class="h-8 w-8 rounded-xl bg-brand-emerald text-brand-bg flex items-center justify-center font-extrabold text-sm shadow-md shadow-brand-emerald/20">
+                    S
+                </div>
+                <div>
+                    <span class="font-extrabold text-base tracking-tight text-white block leading-none">Syntex</span>
+                    <span class="text-[10px] text-brand-textMuted tracking-wider font-body">Smart tech, simply delivered</span>
+                </div>
+            </div>
+
+            <!-- Main Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-8 text-xs font-semibold text-brand-textSecondary">
+                <button onclick="navigate('shop')" id="nav-shop" class="text-white hover:text-brand-emerald transition">Store</button>
+                <button onclick="filterCategory('Audio')" class="hover:text-white transition">Audio</button>
+                <button onclick="filterCategory('Wearables')" class="hover:text-white transition">Wearables</button>
+                <button onclick="filterCategory('Workspace')" class="hover:text-white transition">Workspace</button>
+                <button onclick="navigate('orders')" id="nav-orders" class="hover:text-white transition">My Orders</button>
+            </nav>
+
+            <!-- Search & Actions -->
+            <div class="flex items-center space-x-3">
+                <!-- Live Search Bar -->
+                <div class="relative hidden sm:block">
+                    <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Search catalog..." class="bg-brand-surface border border-brand-border text-xs rounded-xl pl-8 pr-3 py-1.5 text-white placeholder-brand-textMuted focus:outline-none focus:border-brand-emerald w-48 lg:w-60 transition">
+                    <svg class="h-3.5 w-3.5 text-brand-textMuted absolute left-2.5 top-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+
+                <!-- Bag / Cart Trigger -->
+                <button onclick="toggleCart(true)" class="bg-brand-surface hover:bg-brand-elevated text-white border border-brand-border text-xs font-semibold px-3.5 py-2 rounded-xl transition flex items-center space-x-2 shadow-sm">
+                    <svg class="h-4 w-4 text-brand-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <span>Bag (<span id="cart-count">0</span>)</span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Store Content Container -->
+    <main class="max-w-7xl mx-auto px-6 sm:px-12 py-8 w-full flex-1">
+
+        <!-- ================= VIEW 1: PRODUCT STOREFRONT ================= -->
+        <div id="view-storefront" class="space-y-12">
+
+            <!-- Editorial Hero Showcase -->
+            <section class="bg-brand-surface border border-brand-border rounded-3xl p-8 sm:p-12 relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
+                <div class="max-w-xl space-y-4 text-left z-10">
+                    <div class="inline-flex items-center space-x-2 bg-brand-elevated border border-brand-border px-3 py-1 rounded-full text-xs font-semibold text-brand-emerald">
+                        <span>Flagship Release 2026</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                        TECH THAT FITS YOUR LIFE.
+                    </h1>
+                    <p class="text-brand-textSecondary text-sm sm:text-base font-body leading-relaxed">
+                        Precision wireless acoustics, intelligent health wearables, and minimal workspace accessories built for everyday focus.
+                    </p>
+                    <div class="pt-2 flex flex-wrap items-center gap-3">
+                        <button onclick="scrollToGrid()" class="bg-brand-emerald hover:bg-brand-emeraldHover text-brand-bg font-bold text-xs px-6 py-3.5 rounded-xl transition shadow-lg shadow-brand-emerald/10">
+                            Explore All Products
+                        </button>
+                        <button onclick="filterCategory('Audio')" class="bg-brand-elevated hover:bg-brand-border text-white text-xs font-semibold px-5 py-3.5 rounded-xl border border-brand-border transition">
+                            Explore Audio Series
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Featured Hero Item Card -->
+                <div class="relative w-full max-w-sm lg:max-w-md">
+                    <div class="w-64 h-64 rounded-full bg-brand-emerald/10 absolute filter blur-3xl -top-10 -right-10"></div>
+                    <div class="bg-brand-elevated border border-brand-border rounded-2xl p-5 relative z-10 shadow-2xl space-y-4 group">
+                        <div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-brand-surface border border-brand-border/60">
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80" alt="Syntex ANC Headphones" class="w-full h-full object-cover img-zoom">
+                            <span class="absolute top-3 left-3 bg-brand-bg/80 backdrop-blur-sm border border-brand-border text-brand-emerald text-[10px] font-mono font-bold px-2 py-0.5 rounded">
+                                FEATURED
+                            </span>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-baseline">
+                                <h3 class="text-base font-bold text-white group-hover:text-brand-emerald transition-colors">Syntex ANC Wireless Headphones</h3>
+                                <span class="text-sm font-mono font-bold text-white">₹8,999</span>
+                            </div>
+                            <p class="text-xs text-brand-textMuted font-body mt-1">45dB Hybrid Noise Cancellation • 40-Hour Battery</p>
+                        </div>
+
+                        <button onclick="quickAddToCart(1)" class="w-full bg-brand-emerald hover:bg-brand-emeraldHover text-brand-bg font-bold py-3 rounded-xl text-xs transition shadow-sm flex items-center justify-center space-x-1.5">
+                            <span>Add to Bag — ₹8,999</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Category Filter Tabs & Grid Header -->
+            <section id="catalog-section" class="space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-brand-border pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-tight">Curated Tech Essentials</h2>
+                        <p class="text-xs text-brand-textMuted font-body mt-0.5">Engineered for durability, daily ergonomics, and precision performance</p>
+                    </div>
+
+                    <!-- Category Pills -->
+                    <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                        <button onclick="filterCategory('All')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-brand-emerald text-brand-bg font-bold transition" data-cat="All">All Items</button>
+                        <button onclick="filterCategory('Audio')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-brand-surface text-brand-textSecondary hover:text-white border border-brand-border transition" data-cat="Audio">Audio</button>
+                        <button onclick="filterCategory('Wearables')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-brand-surface text-brand-textSecondary hover:text-white border border-brand-border transition" data-cat="Wearables">Wearables</button>
+                        <button onclick="filterCategory('Accessories')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-brand-surface text-brand-textSecondary hover:text-white border border-brand-border transition" data-cat="Accessories">Accessories</button>
+                        <button onclick="filterCategory('Workspace')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-brand-surface text-brand-textSecondary hover:text-white border border-brand-border transition" data-cat="Workspace">Workspace</button>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </section>
+
+            <!-- Trust & Guarantee Pillars -->
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-brand-border">
+                <div class="bg-brand-surface border border-brand-border p-6 rounded-2xl space-y-2">
+                    <div class="text-brand-emerald font-bold text-sm flex items-center space-x-2">
+                        <span>✓</span>
+                        <span>Secure Checkout</span>
+                    </div>
+                    <p class="text-xs text-brand-textMuted font-body leading-relaxed">
+                        All payments are securely processed through Razorpay with encrypted tokenization and bank authorization.
+                    </p>
+                </div>
+                <div class="bg-brand-surface border border-brand-border p-6 rounded-2xl space-y-2">
+                    <div class="text-brand-emerald font-bold text-sm flex items-center space-x-2">
+                        <span>✓</span>
+                        <span>Multiple Payment Rails</span>
+                    </div>
+                    <p class="text-xs text-brand-textMuted font-body leading-relaxed">
+                        Instant checkout support for UPI (Google Pay, PhonePe, Paytm), RuPay/Visa/Mastercard, and Netbanking.
+                    </p>
+                </div>
+                <div class="bg-brand-surface border border-brand-border p-6 rounded-2xl space-y-2">
+                    <div class="text-brand-emerald font-bold text-sm flex items-center space-x-2">
+                        <span>✓</span>
+                        <span>Official 1-Year Warranty</span>
+                    </div>
+                    <p class="text-xs text-brand-textMuted font-body leading-relaxed">
+                        Every hardware unit is backed by our direct 1-year replacement warranty and doorstep pickup service.
+                    </p>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ================= VIEW 2: MY ORDERS ================= -->
+        <div id="view-orders" class="hidden space-y-6">
+            <div class="flex justify-between items-center border-b border-brand-border pb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-white tracking-tight">Order History</h2>
+                    <p class="text-xs text-brand-textMuted font-body mt-0.5">Track your active orders and payment verification states</p>
+                </div>
+                <button onclick="navigate('shop')" class="text-xs text-brand-emerald font-semibold hover:underline">
+                    ← Return to Store
+                </button>
+            </div>
+
+            <div id="orders-list" class="space-y-4">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= PRODUCT DETAIL MODAL ================= -->
+    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-brand-surface border border-brand-border rounded-3xl max-w-2xl w-full p-6 sm:p-8 relative max-h-[92vh] overflow-y-auto custom-scrollbar shadow-2xl">
+            <button onclick="closeProductModal()" class="absolute top-5 right-5 text-brand-textMuted hover:text-white p-1 text-sm font-bold">✕</button>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <!-- Product Image Frame -->
+                <div class="aspect-square rounded-2xl overflow-hidden bg-brand-elevated border border-brand-border">
+                    <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+                </div>
+
+                <!-- Product Information -->
+                <div class="space-y-4">
+                    <div>
+                        <span id="modal-cat" class="text-[10px] font-mono font-bold uppercase bg-brand-elevated text-brand-emerald px-2 py-0.5 rounded">Audio</span>
+                        <h3 id="modal-title" class="text-xl font-bold text-white mt-1.5">Syntex Product</h3>
+                        <div class="flex items-center space-x-2 text-xs text-amber-400 mt-1 font-body">
+                            <span>★★★★★</span>
+                            <span class="text-brand-textMuted text-[11px]" id="modal-reviews">(128 verified reviews)</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-baseline space-x-2.5">
+                        <span id="modal-price" class="text-2xl font-bold text-white font-mono">₹0.00</span>
+                        <span id="modal-orig-price" class="text-xs text-brand-textMuted line-through font-mono">₹0.00</span>
+                        <span class="text-[10px] font-bold text-brand-emerald bg-brand-emerald/10 px-2 py-0.5 rounded">In Stock</span>
+                    </div>
+
+                    <p id="modal-desc" class="text-xs text-brand-textSecondary font-body leading-relaxed">
+                        Product specifications and details.
+                    </p>
+
+                    <!-- Features -->
+                    <div class="space-y-1.5 pt-2 border-t border-brand-border text-xs text-brand-textSecondary font-body">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-brand-emerald">✓</span>
+                            <span>Free Express Delivery (3–5 business days)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-brand-emerald">✓</span>
+                            <span>Official 1-Year Syntex Direct Warranty</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="pt-4 flex space-x-3">
+                        <button onclick="addToCartFromModal()" class="flex-1 bg-brand-emerald hover:bg-brand-emeraldHover text-brand-bg font-bold text-xs py-3.5 rounded-xl transition shadow-sm">
+                            Add to Bag
+                        </button>
+                        <button onclick="buyNowFromModal()" class="px-5 bg-brand-elevated hover:bg-brand-border text-white text-xs font-bold py-3.5 rounded-xl border border-brand-border transition">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SLIDE-OVER BAG / CART DRAWER ================= -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-xs transition-opacity" onclick="toggleCart(false)"></div>
+
+        <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-md bg-brand-surface border-l border-brand-border flex flex-col justify-between shadow-2xl">
+                
+                <!-- Drawer Header -->
+                <div class="p-6 border-b border-brand-border flex items-center justify-between">
+                    <div>
+                        <h2 class="text-base font-bold text-white">Your Shopping Bag</h2>
+                        <p class="text-xs text-brand-textMuted font-body mt-0.5"><span id="cart-drawer-count">0</span> items selected</p>
+                    </div>
+                    <button onclick="toggleCart(false)" class="text-brand-textMuted hover:text-white p-1 text-sm font-bold">✕</button>
+                </div>
+
+                <!-- Line Items Container -->
+                <div class="p-6 flex-1 overflow-y-auto custom-scrollbar space-y-4" id="cart-items-container">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Bag Summary & Checkout Action -->
+                <div class="p-6 border-t border-brand-border bg-brand-elevated/40 space-y-4">
+                    <div class="space-y-2 text-xs font-body">
+                        <div class="flex justify-between text-brand-textSecondary">
+                            <span>Subtotal</span>
+                            <span class="font-mono text-white font-bold" id="cart-subtotal">₹0.00</span>
+                        </div>
+                        <div class="flex justify-between text-brand-textSecondary">
+                            <span>Express Shipping</span>
+                            <span class="text-brand-emerald font-semibold">Free</span>
+                        </div>
+                        <div class="flex justify-between text-sm font-bold text-white border-t border-brand-border pt-2.5">
+                            <span>Total</span>
+                            <span class="font-mono text-brand-emerald font-extrabold" id="cart-total">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <button onclick="openCheckoutModal()" class="w-full bg-brand-emerald hover:bg-brand-emeraldHover text-brand-bg font-extrabold text-xs py-3.5 rounded-xl transition shadow-lg flex items-center justify-center space-x-2">
+                        <span>Proceed to Checkout</span>
+                        <span>→</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= EXPRESS CHECKOUT MODAL ================= -->
+    <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-brand-surface border border-brand-border rounded-3xl max-w-xl w-full p-6 sm:p-8 relative max-h-[92vh] overflow-y-auto custom-scrollbar shadow-2xl">
+            <button onclick="closeCheckoutModal()" class="absolute top-5 right-5 text-brand-textMuted hover:text-white p-1 text-sm font-bold">✕</button>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-bold text-white">Express Checkout</h3>
+                    <p class="text-xs text-brand-textMuted font-body mt-0.5">Please confirm your contact and shipping details</p>
+                </div>
+
+                <!-- Contact Info Form -->
+                <div class="space-y-3 text-xs font-body">
+                    <div>
+                        <label class="block text-brand-textSecondary mb-1 font-medium">Full Name</label>
+                        <input type="text" id="cust-name" value="Alex Mercer" class="w-full bg-brand-elevated border border-brand-border rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-emerald">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-brand-textSecondary mb-1 font-medium">Email Address</label>
+                            <input type="email" id="cust-email" value="alex.mercer@example.com" class="w-full bg-brand-elevated border border-brand-border rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-emerald">
+                        </div>
+                        <div>
+                            <label class="block text-brand-textSecondary mb-1 font-medium">WhatsApp / Phone Number</label>
+                            <input type="tel" id="cust-phone" placeholder="+91 98765 00000" class="w-full bg-brand-elevated border border-brand-border rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-emerald">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-brand-textSecondary mb-1 font-medium">Delivery Address</label>
+                        <input type="text" id="cust-address" value="402, High Street Residency, Indiranagar, Bengaluru, KA 560038" class="w-full bg-brand-elevated border border-brand-border rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-brand-emerald">
+                    </div>
+                </div>
+
+                <!-- Order Summary Breakdown -->
+                <div class="bg-brand-elevated border border-brand-border rounded-2xl p-4 space-y-2 text-xs font-body">
+                    <div class="text-brand-textMuted font-medium mb-1">Order Summary:</div>
+                    <div id="checkout-items-summary" class="space-y-1 text-slate-200">
+                        <!-- Populated dynamically -->
+                    </div>
+                    <div class="border-t border-brand-border pt-2 flex justify-between font-bold text-white text-sm">
+                        <span>Payable Total:</span>
+                        <span class="text-brand-emerald font-mono" id="checkout-total-display">₹0.00</span>
+                    </div>
+                </div>
+
+                <!-- Razorpay Trust Badge -->
+                <div class="flex items-center space-x-2 text-[11px] text-brand-textMuted bg-brand-elevated/40 border border-brand-border p-3 rounded-xl font-body">
+                    <svg class="h-4 w-4 text-brand-emerald flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                    <span>Encrypted checkout authorized by Razorpay • UPI, Cards & Netbanking</span>
+                </div>
+
+                <!-- Checkout Button -->
+                <button id="btn-pay-now" onclick="initiateRazorpayPayment()" class="w-full bg-brand-emerald hover:bg-brand-emeraldHover text-brand-bg font-extrabold text-xs py-4 rounded-xl transition shadow-lg flex items-center justify-center space-x-2">
+                    <span id="pay-btn-text">Pay Now</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAYMENT SUCCESS VIEW ================= -->
+    <div id="success-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-brand-surface border border-brand-border rounded-3xl max-w-md w-full p-8 text-center space-y-6 shadow-2xl">
+            <div class="h-16 w-16 bg-brand-emerald/20 border border-brand-emerald/40 text-brand-emerald rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+                ✓
+            </div>
+
+            <div>
+                <h3 class="text-xl font-extrabold text-white">Payment Confirmed</h3>
+                <p class="text-xs text-brand-textMuted font-body mt-1">Thank you for your order. We have sent a confirmation email to your inbox.</p>
+            </div>
+
+            <div class="bg-brand-elevated border border-brand-border rounded-2xl p-4 text-xs font-mono space-y-2 text-left">
+                <div class="flex justify-between">
+                    <span class="text-brand-textMuted">Order ID:</span>
+                    <span class="text-white font-bold" id="success-order-id">ORD-48291</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-brand-textMuted">Payment ID:</span>
+                    <span class="text-brand-emerald font-bold" id="success-payment-id">pay_xxxxxx</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-brand-textMuted">Amount Paid:</span>
+                    <span class="text-white font-bold" id="success-amount">₹8,999.00</span>
+                </div>
+                <div class="flex justify-between border-t border-brand-border pt-2 text-[11px]">
+                    <span class="text-brand-textMuted">Estimated Delivery:</span>
+                    <span class="text-slate-300">3–5 Business Days</span>
+                </div>
+            </div>
+
+            <div class="flex space-x-3 pt-2">
+                <button onclick="navigate('orders'); closeSuccessModal();" class="flex-1 bg-brand-emerald hover:bg-brand-emeraldHover text-brand-bg font-extrabold text-xs py-3 rounded-xl transition">
+                    View Orders
+                </button>
+                <button onclick="closeSuccessModal(); navigate('shop');" class="flex-1 bg-brand-elevated hover:bg-brand-border text-white text-xs font-bold py-3 rounded-xl border border-brand-border transition">
+                    Continue Shopping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAYMENT FAILURE VIEW ================= -->
+    <div id="failure-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-brand-surface border border-brand-border rounded-3xl max-w-md w-full p-8 text-center space-y-6 shadow-2xl">
+            <div class="h-16 w-16 bg-rose-500/20 border border-rose-500/40 text-rose-500 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+                ✕
+            </div>
+
+            <div>
+                <h3 class="text-xl font-extrabold text-white">Payment Authorization Incomplete</h3>
+                <p class="text-xs text-brand-textMuted font-body mt-1">Your payment could not be processed by your bank, but your cart items remain reserved.</p>
+            </div>
+
+            <div class="bg-brand-elevated border border-brand-border rounded-2xl p-4 text-xs font-mono space-y-2 text-left">
+                <div class="flex justify-between">
+                    <span class="text-brand-textMuted">Status:</span>
+                    <span class="text-rose-400 font-bold">Declined by Issuer</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-brand-textMuted">Order Total:</span>
+                    <span class="text-white font-bold" id="failure-amount">₹8,999.00</span>
+                </div>
+                <p class="text-[11px] text-brand-textMuted font-body pt-1">
+                    You can retry immediately using UPI (Google Pay, PhonePe) or another debit/credit card.
+                </p>
+            </div>
+
+            <div class="space-y-2.5 pt-2">
+                <button onclick="closeFailureModal(); openCheckoutModal();" class="w-full bg-brand-emerald hover:bg-brand-emeraldHover text-brand-bg font-extrabold text-xs py-3.5 rounded-xl transition">
+                    Retry Payment (UPI / Alternative Card)
+                </button>
+                <button onclick="closeFailureModal(); navigate('orders');" class="w-full bg-brand-elevated hover:bg-brand-border text-white text-xs font-bold py-3.5 rounded-xl border border-brand-border transition">
+                    View in My Orders
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Storefront Footer -->
+    <footer class="bg-brand-surface border-t border-brand-border px-6 sm:px-12 py-10 mt-16 text-xs text-brand-textMuted font-body">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="space-y-2">
+                <span class="font-extrabold text-white text-sm block">Syntex</span>
+                <p class="text-[11px] leading-relaxed">Precision-engineered audio, smart wearables, and workspace performance hardware.</p>
+            </div>
+            <div class="space-y-1.5">
+                <span class="font-bold text-white block mb-2">Collections</span>
+                <p class="cursor-pointer hover:text-white" onclick="filterCategory('Audio')">Acoustics & Headphones</p>
+                <p class="cursor-pointer hover:text-white" onclick="filterCategory('Wearables')">Smart Wearables</p>
+                <p class="cursor-pointer hover:text-white" onclick="filterCategory('Workspace')">Workspace Accessories</p>
+            </div>
+            <div class="space-y-1.5">
+                <span class="font-bold text-white block mb-2">Customer Care</span>
+                <p class="cursor-pointer hover:text-white">Shipping & Delivery</p>
+                <p class="cursor-pointer hover:text-white">Warranty Registration</p>
+                <p class="cursor-pointer hover:text-white">Returns & Replacements</p>
+            </div>
+            <div class="space-y-2">
+                <span class="font-bold text-white block mb-2">Payment Security</span>
+                <p class="text-[11px] leading-relaxed">Encrypted checkout powered by Razorpay.</p>
+                <!-- Merchant Portal Link -->
+                <div class="pt-2">
+                    <a href="/" target="_blank" class="text-[11px] text-brand-textMuted hover:text-brand-emerald font-semibold transition flex items-center space-x-1">
+                        <span>Merchant Console</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto border-t border-brand-border/60 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center text-[11px] text-brand-textMuted">
+            <p>© 2026 Syntex Inc. All rights reserved.</p>
+            <p class="mt-2 sm:mt-0">Authorized Razorpay Payment Infrastructure</p>
+        </div>
+    </footer>
+
+    <!-- Ecommerce Client-Side Application Logic -->
+    <script>
+        // High-Resolution Curated Product Catalog
+        const products = [
+            {
+                id: 1,
+                name: "Syntex ANC Wireless Headphones",
+                category: "Audio",
+                price: 8999,
+                origPrice: 11999,
+                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80",
+                badge: "BESTSELLER",
+                rating: "4.9",
+                reviews: 142,
+                desc: "Custom 40mm bio-cellulose drivers, 45dB hybrid active noise cancellation, transparency ambient mode, and 40 hours of continuous wireless playback."
+            },
+            {
+                id: 2,
+                name: "Syntex Chrono Pro Smartwatch",
+                category: "Wearables",
+                price: 5499,
+                origPrice: 7499,
+                image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
+                badge: "NEW",
+                rating: "4.8",
+                reviews: 98,
+                desc: "1.43-inch AMOLED sapphire glass display, continuous SpO2/ECG heart metrics, 5ATM water resistance, and 7-day extended battery life."
+            },
+            {
+                id: 3,
+                name: "Syntex GaN 65W Rapid Charger",
+                category: "Accessories",
+                price: 2499,
+                origPrice: 3199,
+                image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format&fit=crop&q=80",
+                badge: "POPULAR",
+                rating: "4.9",
+                reviews: 215,
+                desc: "Triple-port GaN III architecture supporting 65W Power Delivery for high-speed simultaneous charging of laptops and smartphones."
+            },
+            {
+                id: 4,
+                name: "Syntex Studio Mechanical Keyboard",
+                category: "Workspace",
+                price: 6999,
+                origPrice: 8999,
+                image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80",
+                badge: "TOP RATED",
+                rating: "4.9",
+                reviews: 84,
+                desc: "CNC anodized aluminum body, hot-swappable tactile mechanical switches, sound-dampening silicone gaskets, and tri-mode wireless connectivity."
+            },
+            {
+                id: 5,
+                name: "Syntex Precision Ergonomic Mouse",
+                category: "Workspace",
+                price: 2199,
+                origPrice: 2899,
+                image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80",
+                badge: "ERGONOMIC",
+                rating: "4.7",
+                reviews: 160,
+                desc: "Contoured grip reducing forearm strain, whisper-quiet microswitches, high-precision 4000 DPI optical sensor, and horizontal thumb scroll."
+            },
+            {
+                id: 6,
+                name: "Syntex Enterprise Hardware Kit",
+                category: "Workspace",
+                price: 60000,
+                origPrice: 75000,
+                image: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=800&auto=format&fit=crop&q=80",
+                badge: "ENTERPRISE",
+                rating: "5.0",
+                reviews: 35,
+                desc: "Dedicated hardware acceleration development rack with dual redundant power modules and direct enterprise technical support."
+            }
+        ];
+
+        // State Management
+        let cart = [
+            { product: products[0], quantity: 1 }
+        ];
+
+        let customerOrders = [
+            {
+                id: "ORD-94812",
+                date: "Today",
+                product: "Syntex ANC Wireless Headphones",
+                amount: 8999,
+                status: "Confirmed",
+                paymentStatus: "Paid"
+            }
+        ];
+
+        let activeCategory = "All";
+        let activeModalProduct = products[0];
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = msg;
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 3500);
+        }
+
+        function formatRupees(amount) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Render Product Cards
+        function renderProducts(itemsToRender) {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+
+            const items = itemsToRender || products;
+
+            if (items.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-3 py-16 text-center text-brand-textMuted text-xs font-body">
+                        No products found matching your search. Try another query.
+                    </div>
+                `;
+                return;
+            }
+
+            items.forEach(p => {
+                const card = `
+                    <div class="bg-brand-surface border border-brand-border hover:border-brand-borderHover rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 group shadow-sm hover:shadow-xl">
+                        <div onclick="openProductModal(${p.id})" class="cursor-pointer space-y-4">
+                            <!-- Image Frame -->
+                            <div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-brand-elevated border border-brand-border/60">
+                                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover img-zoom">
+                                <span class="absolute top-2.5 left-2.5 bg-brand-bg/85 backdrop-blur-xs border border-brand-border text-brand-emerald text-[9px] font-mono font-bold px-2 py-0.5 rounded">
+                                    ${p.badge}
+                                </span>
+                            </div>
+
+                            <!-- Product Meta -->
+                            <div>
+                                <span class="text-[10px] font-mono uppercase text-brand-textMuted tracking-wider font-semibold">${p.category}</span>
+                                <h3 class="text-sm font-bold text-white mt-1 group-hover:text-brand-emerald transition-colors line-clamp-1">${p.name}</h3>
+                                <p class="text-xs text-brand-textMuted font-body line-clamp-2 mt-1 leading-relaxed">${p.desc}</p>
+                                
+                                <div class="mt-3 flex items-baseline space-x-2 font-mono">
+                                    <span class="text-base font-bold text-white">${formatRupees(p.price)}</span>
+                                    <span class="text-xs text-brand-textMuted line-through">${formatRupees(p.origPrice)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add to Cart CTA -->
+                        <div class="mt-4 pt-3 border-t border-brand-border flex space-x-2">
+                            <button onclick="quickAddToCart(${p.id})" class="flex-1 bg-brand-emerald hover:bg-brand-emeraldHover active:scale-[0.98] text-brand-bg font-bold text-xs py-2.5 rounded-xl transition shadow-sm">
+                                Add to Bag
+                            </button>
+                            <button onclick="openProductModal(${p.id})" class="px-3 bg-brand-elevated hover:bg-brand-border text-white text-xs font-semibold py-2.5 rounded-xl border border-brand-border transition">
+                                Details
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', card);
+            });
+        }
+
+        // Cart State & UI
+        function updateCartUI() {
+            const countBadge = document.getElementById('cart-count');
+            const drawerCount = document.getElementById('cart-drawer-count');
+            const container = document.getElementById('cart-items-container');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const totalEl = document.getElementById('cart-total');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+
+            countBadge.textContent = totalItems;
+            drawerCount.textContent = totalItems;
+            subtotalEl.textContent = formatRupees(totalPrice);
+            totalEl.textContent = formatRupees(totalPrice);
+
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="py-20 text-center text-brand-textMuted space-y-3 font-body">
+                        <div class="text-3xl opacity-40">🛍️</div>
+                        <p class="text-xs font-medium">Your shopping bag is empty.</p>
+                        <button onclick="toggleCart(false); scrollToGrid();" class="text-xs text-brand-emerald font-bold hover:underline">
+                            Explore our latest collection →
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            cart.forEach(item => {
+                const itemRow = `
+                    <div class="bg-brand-elevated border border-brand-border rounded-xl p-3 flex items-center justify-between gap-3">
+                        <img src="${item.product.image}" alt="" class="h-12 w-12 rounded-lg object-cover flex-shrink-0 border border-brand-border">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-xs font-bold text-white truncate">${item.product.name}</h4>
+                            <span class="text-xs text-brand-emerald font-mono font-bold">${formatRupees(item.product.price)}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-brand-surface border border-brand-border rounded-lg px-2 py-1">
+                            <button onclick="changeQty(${item.product.id}, -1)" class="text-brand-textMuted hover:text-white font-bold text-xs px-1">-</button>
+                            <span class="text-xs font-mono font-bold text-white">${item.quantity}</span>
+                            <button onclick="changeQty(${item.product.id}, 1)" class="text-brand-textMuted hover:text-white font-bold text-xs px-1">+</button>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', itemRow);
+            });
+        }
+
+        function quickAddToCart(productId) {
+            const p = products.find(prod => prod.id === productId);
+            const existing = cart.find(item => item.product.id === productId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ product: p, quantity: 1 });
+            }
+            updateCartUI();
+            showToast(`Added ${p.name} to bag`);
+        }
+
+        function changeQty(productId, delta) {
+            const idx = cart.findIndex(item => item.product.id === productId);
+            if (idx === -1) return;
+            cart[idx].quantity += delta;
+            if (cart[idx].quantity <= 0) {
+                cart.splice(idx, 1);
+            }
+            updateCartUI();
+        }
+
+        function toggleCart(show) {
+            const drawer = document.getElementById('cart-drawer');
+            if (show) drawer.classList.remove('hidden');
+            else drawer.classList.add('hidden');
+        }
+
+        // Product Modal Logic
+        function openProductModal(productId) {
+            const p = products.find(prod => prod.id === productId);
+            if (!p) return;
+            activeModalProduct = p;
+
+            document.getElementById('modal-img').src = p.image;
+            document.getElementById('modal-cat').textContent = p.category;
+            document.getElementById('modal-title').textContent = p.name;
+            document.getElementById('modal-reviews').textContent = `(${p.reviews} verified reviews)`;
+            document.getElementById('modal-price').textContent = formatRupees(p.price);
+            document.getElementById('modal-orig-price').textContent = formatRupees(p.origPrice);
+            document.getElementById('modal-desc').textContent = p.desc;
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        function addToCartFromModal() {
+            quickAddToCart(activeModalProduct.id);
+            closeProductModal();
+        }
+
+        function buyNowFromModal() {
+            quickAddToCart(activeModalProduct.id);
+            closeProductModal();
+            openCheckoutModal();
+        }
+
+        // Category Filter Logic
+        function filterCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                if (btn.getAttribute('data-cat') === cat) {
+                    btn.className = "cat-pill px-3.5 py-1.5 rounded-xl bg-brand-emerald text-brand-bg font-bold transition";
+                } else {
+                    btn.className = "cat-pill px-3.5 py-1.5 rounded-xl bg-brand-surface text-brand-textSecondary hover:text-white border border-brand-border transition";
+                }
+            });
+
+            if (cat === 'All') {
+                renderProducts(products);
+            } else {
+                renderProducts(products.filter(p => p.category === cat));
+            }
+            navigate('shop');
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
+            renderProducts(filtered);
+        }
+
+        function scrollToGrid() {
+            navigate('shop');
+            document.getElementById('catalog-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // View Navigation Switcher
+        function navigate(viewName) {
+            const viewStore = document.getElementById('view-storefront');
+            const viewOrders = document.getElementById('view-orders');
+            const navShop = document.getElementById('nav-shop');
+            const navOrders = document.getElementById('nav-orders');
+
+            if (viewName === 'orders') {
+                viewStore.classList.add('hidden');
+                viewOrders.classList.remove('hidden');
+                navOrders.className = "text-white hover:text-brand-emerald transition";
+                navShop.className = "text-brand-textSecondary hover:text-brand-emerald transition";
+                renderOrders();
+            } else {
+                viewStore.classList.remove('hidden');
+                viewOrders.classList.add('hidden');
+                navShop.className = "text-white hover:text-brand-emerald transition";
+                navOrders.className = "text-brand-textSecondary hover:text-brand-emerald transition";
+            }
+        }
+
+        function renderOrders() {
+            const container = document.getElementById('orders-list');
+            container.innerHTML = '';
+
+            customerOrders.forEach(ord => {
+                const row = `
+                    <div class="bg-brand-surface border border-brand-border rounded-2xl p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-mono font-bold text-white text-xs">${ord.id}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded font-mono ${ord.paymentStatus === 'Paid' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-amber-950 text-amber-300 border border-amber-800'}">${ord.paymentStatus}</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-white mt-1">${ord.product}</h4>
+                            <span class="text-xs text-brand-textMuted font-mono">${formatRupees(ord.amount)}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            ${ord.paymentStatus !== 'Paid' ? `<button onclick="openCheckoutModal()" class="bg-brand-emerald hover:bg-brand-emeraldHover text-brand-bg font-bold text-xs px-4 py-2 rounded-xl transition">Complete Payment</button>` : `<span class="text-xs text-emerald-400 font-semibold font-body">Delivery in 3–5 days</span>`}
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        // Checkout Modal Logic
+        function openCheckoutModal() {
+            toggleCart(false);
+            const total = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+            if (total === 0) {
+                alert("Your bag is empty! Add an item before checking out.");
+                return;
+            }
+
+            document.getElementById('checkout-total-display').textContent = formatRupees(total);
+            const itemsSummary = document.getElementById('checkout-items-summary');
+            itemsSummary.innerHTML = cart.map(i => `<div class="flex justify-between"><span>${i.product.name} × ${i.quantity}</span><span class="font-mono">${formatRupees(i.product.price * i.quantity)}</span></div>`).join('');
+            
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        // Razorpay Checkout Integration
+        async function initiateRazorpayPayment() {
+            const btn = document.getElementById('btn-pay-now');
+            const btnText = document.getElementById('pay-btn-text');
+            const totalRupees = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+            const amountInPaisa = totalRupees * 100;
+
+            const name = document.getElementById('cust-name').value;
+            const email = document.getElementById('cust-email').value;
+            const phone = document.getElementById('cust-phone').value;
+            const primaryItemName = cart.map(i => i.product.name).join(', ');
+
+            btn.disabled = true;
+            btnText.textContent = "Connecting to Secure Gateway...";
+
+            try {
+                // 1. Call Backend Order Creation
+                const res = await fetch('/api/create-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: amountInPaisa,
+                        product_name: primaryItemName,
+                        customer_name: name,
+                        customer_email: email,
+                        customer_phone: phone
+                    })
+                });
+
+                if (!res.ok) throw new Error('Order creation failed on backend');
+                const data = await res.json();
+
+                // 2. Open Razorpay Checkout Modal
+                const options = {
+                    "key": data.key_id,
+                    "amount": data.amount,
+                    "currency": "INR",
+                    "name": "Syntex Store",
+                    "description": primaryItemName,
+                    "order_id": data.order_id,
+                    "prefill": {
+                        "name": name,
+                        "email": email,
+                        "contact": phone
+                    },
+                    "theme": {
+                        "color": "#10B981"
+                    },
+                    "handler": function (response) {
+                        // Payment Succeeded
+                        closeCheckoutModal();
+                        document.getElementById('success-order-id').textContent = data.order_id;
+                        document.getElementById('success-payment-id').textContent = response.razorpay_payment_id;
+                        document.getElementById('success-amount').textContent = formatRupees(totalRupees);
+                        document.getElementById('success-modal').classList.remove('hidden');
+                        
+                        customerOrders.unshift({
+                            id: data.order_id,
+                            date: "Just now",
+                            product: primaryItemName,
+                            amount: totalRupees,
+                            status: "Confirmed",
+                            paymentStatus: "Paid"
+                        });
+                        cart = [];
+                        updateCartUI();
+                    },
+                    "modal": {
+                        "ondismiss": function() {
+                            btn.disabled = false;
+                            btnText.textContent = `Pay ${formatRupees(totalRupees)}`;
+                            closeCheckoutModal();
+                            document.getElementById('failure-amount').textContent = formatRupees(totalRupees);
+                            document.getElementById('failure-modal').classList.remove('hidden');
+                        }
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+
+            } catch(e) {
+                alert("Could not start checkout: " + e.message);
+                btn.disabled = false;
+                btnText.textContent = `Pay ${formatRupees(totalRupees)}`;
+            }
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+        }
+
+        function closeFailureModal() {
+            document.getElementById('failure-modal').classList.add('hidden');
+        }
+
+        // Initialize Store on load
+        renderProducts();
+        updateCartUI();
+    </script>
+</body>
+</html>
