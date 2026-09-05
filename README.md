@@ -1,4 +1,4 @@
-﻿# RecoverFlow
+# RecoverFlow
 
 **Autonomous AI Payment Recovery & Multi-Channel Customer Outreach Platform — Razorpay Buildathon 2026 (AI Revenue Recovery Track)**
 
@@ -8,8 +8,8 @@
 ![WhatsApp](https://img.shields.io/badge/Meta-WhatsApp%20Cloud%20API-25D366)
 ![AI](https://img.shields.io/badge/AI-Gemini%202.5%20Flash-purple)
 
-**Live Merchant Console:** `https://<your-app>.vercel.app/`  
-**Customer Storefront (Syntex):** `https://<your-app>.vercel.app/shop`
+**Merchant Console:** `http://127.0.0.1:8000/`  
+**Customer Storefront (Syntex):** `http://127.0.0.1:8000/shop`
 
 ---
 
@@ -124,12 +124,11 @@ Razorpay Webhook Ingress (POST /webhook)
 
 ## 🏗️ Architecture & Technology Stack
 
-- **Backend**: Python 3.10+, FastAPI, Uvicorn, SQLite / Serverless `/tmp`
+- **Backend**: Python 3.10+, FastAPI, Uvicorn, SQLite
 - **AI Model**: Google Gemini 2.5 Flash (`google-generativeai`)
 - **Payments**: Official Razorpay Python SDK & Razorpay Webhooks
 - **Messaging**: Official Meta WhatsApp Business Cloud API (Graph API v19.0) & HTTPX Async Client
 - **Frontend**: Tailwind CSS, Vanilla JS, Google Fonts (Inter, Space Grotesk, JetBrains Mono)
-- **Deployment**: Vercel Serverless Functions (`vercel.json`, `api/index.py`)
 
 ---
 
@@ -137,8 +136,8 @@ Razorpay Webhook Ingress (POST /webhook)
 
 ### 1. Installation
 ```bash
-git clone https://github.com/<your-username>/recoverflow.git
-cd recoverflow
+git clone https://github.com/Akshayacheruku04/Recover-Flow.git
+cd Recover-Flow
 pip install -r requirements.txt
 ```
 
@@ -180,16 +179,3 @@ When testing checkout failures and recoveries on `/shop`:
 | **SBI Visa Test Card** | `4591 5000 0000 0006` | `12/28` · `123` | Domestic Indian Test Card |
 | **RuPay Test Card** | `6070 1234 5678 9017` | `12/28` · `123` | Domestic Debit Card Checkout |
 | **Netbanking (Instant)** | Select **HDFC Bank** | N/A | Instant 1-Click **Success** / **Failure** Modal |
-
----
-
-## 🚀 Production Deployment (Vercel Serverless)
-
-1. Push to GitHub:
-   ```bash
-   git add . && git commit -m "Deploy RecoverFlow platform"
-   git push origin main
-   ```
-2. Import the repository into [Vercel](https://vercel.com).
-3. Add environment variables in Vercel Project Settings.
-4. Click **Deploy**. Both the Merchant Console (`/`) and Customer Storefront (`/shop`) will be live instantly!

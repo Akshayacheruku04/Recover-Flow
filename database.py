@@ -3,12 +3,8 @@ import sqlite3
 import json
 from datetime import datetime
 
-# Serverless compatibility (Vercel has read-only root; writable in /tmp)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-if os.getenv("VERCEL"):
-    DB_FILE = "/tmp/recovery_system.db"
-else:
-    DB_FILE = os.getenv("DB_FILE", os.path.join(BASE_DIR, "recovery_system.db"))
+DB_FILE = os.getenv("DB_FILE", os.path.join(BASE_DIR, "recovery_system.db"))
 
 def get_db_connection():
     # If the database file does not exist yet (e.g. freshly created in /tmp), initialize it
